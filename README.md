@@ -89,7 +89,7 @@ Alternative: [MenubarX](https://menubarx.app) can pin the deployed web app itsel
 
 ```text
 index.html            app shell
-styles.css            dark, mobile-first styling
+styles.css            dark/light, mobile-first styling
 tz.js                 pure Intl-based timezone helpers (DST-safe)
 zones.js              zone catalog + search (cities, countries, abbreviations)
 app.js                UI logic: clocks, zone picker, converter, quick reference

@@ -4,11 +4,17 @@
 
   const DEFAULT_STATE = { from: 'America/Denver', to: 'Africa/Lagos' };
   const STORE_KEY = 'timebridge-zones';
+  const THEME_KEY = 'timebridge-theme';
+  const THEMES = {
+    dark: { label: 'Use light theme', color: '#171412' },
+    light: { label: 'Use dark theme', color: '#FFFFFF' },
+  };
 
   const $ = (id) => document.getElementById(id);
 
   const els = {
     dstPill: $('dst-pill'),
+    themeToggle: $('theme-toggle'),
     fromRow: $('from-row'), toRow: $('to-row'),
     fromName: $('from-name'), fromSub: $('from-sub'), fromAbbr: $('from-abbr'),
     fromTime: $('from-time'), fromDate: $('from-date'),
@@ -46,6 +52,29 @@
 
   function saveState() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch { /* private mode */ }
+  }
+
+  function loadTheme() {
+    try {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === 'light' || saved === 'dark') return saved;
+    } catch { /* private mode */ }
+    return 'dark';
+  }
+
+  function applyTheme(theme) {
+    const safeTheme = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = safeTheme;
+    const nextTheme = safeTheme === 'dark' ? 'light' : 'dark';
+    const next = THEMES[nextTheme];
+    els.themeToggle.setAttribute('aria-label', next.label);
+    els.themeToggle.title = next.label;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEMES[safeTheme].color);
+    try { localStorage.setItem(THEME_KEY, safeTheme); } catch { /* private mode */ }
+  }
+
+  function toggleTheme() {
+    applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
   }
 
   const abbr = (tz, date) => TZ.zoneAbbr(tz, date, Zones.abbrOverride(tz));
@@ -291,6 +320,7 @@
 
   els.fromRow.addEventListener('click', () => openPicker('from'));
   els.toRow.addEventListener('click', () => openPicker('to'));
+  els.themeToggle.addEventListener('click', toggleTheme);
   els.swapBtn.addEventListener('click', swapZones);
   els.convDate.addEventListener('input', onFromEdited);
   els.fromTimeInput.addEventListener('input', onFromEdited);
@@ -314,6 +344,7 @@
   });
 
   Zones.init();
+  applyTheme(loadTheme());
   setDefaultInputs();
   renderAll();
   Zones.primeNames(); // background: index MST/MDT-style names for search

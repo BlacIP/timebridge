@@ -13,22 +13,39 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TimeBridge">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem('timebridge-theme') || 'dark';
+    } catch {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  </script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="app-header">
     <div class="brand">
       <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
-        <circle cx="24" cy="24" r="15" fill="none" stroke="#3B342E" stroke-width="6"/>
+        <circle class="brand-ring" cx="24" cy="24" r="15" fill="none" stroke-width="6"/>
         <path d="M24 9 A 15 15 0 0 0 24 39" fill="none" stroke="#F97316" stroke-width="6" stroke-linecap="round"/>
         <path d="M24 9 A 15 15 0 0 1 24 39" fill="none" stroke="#4ADE80" stroke-width="6" stroke-linecap="round"/>
-        <line x1="24" y1="24" x2="15" y2="24" stroke="#FAF7F5" stroke-width="3.5" stroke-linecap="round"/>
-        <line x1="24" y1="24" x2="31" y2="28" stroke="#FAF7F5" stroke-width="3.5" stroke-linecap="round"/>
-        <circle cx="24" cy="24" r="2.5" fill="#FAF7F5"/>
+        <line class="brand-hand" x1="24" y1="24" x2="15" y2="24" stroke-width="3.5" stroke-linecap="round"/>
+        <line class="brand-hand" x1="24" y1="24" x2="31" y2="28" stroke-width="3.5" stroke-linecap="round"/>
+        <circle class="brand-hand-fill" cx="24" cy="24" r="2.5"/>
       </svg>
       <h1>TimeBridge</h1>
     </div>
-    <span class="pill" id="dst-pill" title="Current status of the “from” zone">—</span>
+    <div class="header-actions">
+      <span class="pill" id="dst-pill" title="Current status of the “from” zone">—</span>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Use light theme" title="Use light theme">
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3a6.5 6.5 0 0 0 8.9 8.9 8 8 0 1 1-8.9-8.9Z"/>
+        </svg>
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+        </svg>
+      </button>
+    </div>
   </header>
 
   <main>
