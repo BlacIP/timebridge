@@ -1,0 +1,16 @@
+{
+  "name": "TimeBridge — Provo to Lagos",
+  "short_name": "TimeBridge",
+  "description": "Convert Provo, Utah Mountain Time (MST/MDT) to Nigerian time (WAT) instantly. Handles daylight saving automatically.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#171412",
+  "theme_color": "#171412",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

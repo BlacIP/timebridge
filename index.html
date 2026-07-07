@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TimeBridge — Time Zone Converter</title>
+  <meta name="description" content="Convert between any two time zones — search by city or zone name (MST, PST, WAT…). Defaults to Provo, Utah Mountain Time → Nigeria. Handles daylight saving automatically. Works offline.">
+  <meta name="theme-color" content="#171412">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TimeBridge">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="15" fill="none" stroke="#3B342E" stroke-width="6"/>
+        <path d="M24 9 A 15 15 0 0 0 24 39" fill="none" stroke="#F97316" stroke-width="6" stroke-linecap="round"/>
+        <path d="M24 9 A 15 15 0 0 1 24 39" fill="none" stroke="#4ADE80" stroke-width="6" stroke-linecap="round"/>
+        <line x1="24" y1="24" x2="15" y2="24" stroke="#FAF7F5" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="24" y1="24" x2="31" y2="28" stroke="#FAF7F5" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="24" cy="24" r="2.5" fill="#FAF7F5"/>
+      </svg>
+      <h1>TimeBridge</h1>
+    </div>
+    <span class="pill" id="dst-pill" title="Current status of the “from” zone">—</span>
+  </header>
+
+  <main>
+    <!-- Live clocks / zone selectors -->
+    <section class="card now-card" aria-label="Current time in both zones">
+      <button class="zone-row" id="from-row" type="button" aria-haspopup="dialog" aria-label="Change the first time zone">
+        <span class="zone-dot zone-dot--from" aria-hidden="true"></span>
+        <span class="zone-meta">
+          <span class="zone-name" id="from-name">Provo <span class="zone-abbr zone-abbr--from" id="from-abbr">MT</span></span>
+          <span class="zone-sub" id="from-sub">Utah Mountain Time</span>
+        </span>
+        <span class="zone-time">
+          <span class="time" id="from-time">–:––</span>
+          <span class="date" id="from-date">—</span>
+        </span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <div class="divider" role="presentation"></div>
+      <button class="zone-row" id="to-row" type="button" aria-haspopup="dialog" aria-label="Change the second time zone">
+        <span class="zone-dot zone-dot--to" aria-hidden="true"></span>
+        <span class="zone-meta">
+          <span class="zone-name" id="to-name">Lagos <span class="zone-abbr zone-abbr--to" id="to-abbr">WAT</span></span>
+          <span class="zone-sub" id="to-sub">Nigeria</span>
+        </span>
+        <span class="zone-time">
+          <span class="time" id="to-time">–:––</span>
+          <span class="date" id="to-date">—</span>
+        </span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <p class="offset-note" id="offset-note">&nbsp;</p>
+    </section>
+
+    <!-- Converter -->
+    <section class="card converter-card" aria-label="Convert a specific time">
+      <div class="conv-header">
+        <h2 id="conv-title">Provo → Lagos</h2>
+        <button id="swap-btn" class="icon-btn" type="button" aria-label="Swap the two zones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/>
+          </svg>
+        </button>
+      </div>
+
+      <label class="field">
+        <span class="field-label" id="date-label">Date in Provo</span>
+        <input type="date" id="conv-date" autocomplete="off">
+      </label>
+
+      <div class="conv-times">
+        <label class="field">
+          <span class="field-label" id="from-time-label">Time in Provo</span>
+          <input type="time" class="time-input" id="from-time-input" autocomplete="off">
+        </label>
+        <span class="conv-eq" aria-hidden="true">=</span>
+        <label class="field">
+          <span class="field-label" id="to-time-label">Time in Lagos</span>
+          <input type="time" class="time-input" id="to-time-input" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="conv-note" aria-live="polite">
+        <span id="conv-note-text">—</span>
+        <span class="badge" id="day-badge" hidden>+1 day</span>
+        <button id="copy-btn" class="copy-mini" type="button" aria-label="Copy conversion" title="Copy conversion">
+          <svg class="ico-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+          </svg>
+          <svg class="ico-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Quick reference -->
+    <section class="card ref-card" aria-label="Quick reference for common meeting hours">
+      <div class="ref-header">
+        <h2>Quick reference</h2>
+        <span class="ref-note" id="ref-date-note"></span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr><th scope="col" id="ref-th-from">Provo</th><th scope="col" class="ref-arrow" aria-hidden="true"></th><th scope="col" id="ref-th-to">Lagos</th></tr>
+        </thead>
+        <tbody id="ref-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Daylight saving handled automatically · Works offline</p>
+  </footer>
+
+  <!-- Zone picker -->
+  <dialog id="zone-picker" aria-label="Choose a time zone">
+    <div class="picker-sheet">
+      <div class="picker-head">
+        <input type="search" id="zone-search" placeholder="City or zone — try MST, Lagos, London…"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               aria-label="Search time zones">
+        <button class="picker-close" id="picker-close" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="picker-list" id="zone-list"></div>
+    </div>
+  </dialog>
+
+  <script src="tz.js"></script>
+  <script src="zones.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
