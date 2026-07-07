@@ -322,6 +322,17 @@
   els.toRow.addEventListener('click', () => openPicker('to'));
   els.themeToggle.addEventListener('click', toggleTheme);
   els.swapBtn.addEventListener('click', swapZones);
+  document.getElementById('swap-rows-btn').addEventListener('click', swapZones);
+
+  // Clicking a date/time input opens the browser's dropdown picker
+  // (calendar / time list) while keeping the field typeable.
+  for (const input of [els.convDate, els.fromTimeInput, els.toTimeInput]) {
+    input.addEventListener('click', () => {
+      if (typeof input.showPicker === 'function') {
+        try { input.showPicker(); } catch { /* already open, or gesture rules */ }
+      }
+    });
+  }
   els.convDate.addEventListener('input', onFromEdited);
   els.fromTimeInput.addEventListener('input', onFromEdited);
   els.toTimeInput.addEventListener('input', onToEdited);
@@ -365,6 +376,13 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+      // When an updated service worker takes over, reload once so the page
+      // picks up the new assets immediately instead of showing a stale build.
+      let hadController = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (hadController) location.reload();
+        hadController = true;
+      });
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }

@@ -191,6 +191,10 @@ main { display: flex; flex-direction: column; gap: 16px; }
 
 .divider { height: 1px; background: var(--border); margin: 6px 0; }
 
+/* Divider row with the swap-direction button between the two zones */
+.divider-swap { display: flex; align-items: center; gap: 12px; margin: 2px 0; }
+.divider-swap .divider { flex: 1; margin: 0; }
+
 .offset-note {
   margin-top: 14px;
   font-size: 0.8125rem;
@@ -226,6 +230,8 @@ main { display: flex; flex-direction: column; gap: 16px; }
   transition: background 180ms ease, transform 180ms ease;
 }
 .icon-btn svg { width: 20px; height: 20px; }
+.icon-btn--inline { width: 36px; height: 36px; border-radius: 10px; }
+.icon-btn--inline svg { width: 16px; height: 16px; }
 .icon-btn:hover { background: var(--orange-hover); }
 .icon-btn:active { transform: scale(0.94); }
 

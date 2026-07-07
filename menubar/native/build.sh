@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds "TimeBridge Bar.app" from TimeBridgeBar.swift using Apple's Swift
+# Builds "TimeBridge Bar.app" from the native Swift sources using Apple's Swift
 # compiler (comes with Xcode or the Command Line Tools — no third party).
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -25,7 +25,7 @@ cat > "$APP/Contents/Info.plist" <<'EOF'
 </plist>
 EOF
 
-swiftc -O TimeBridgeBar.swift -o "$APP/Contents/MacOS/TimeBridgeBar"
+swiftc -O *.swift -o "$APP/Contents/MacOS/TimeBridgeBar"
 
 echo "Built: $(pwd)/$APP"
 echo "Run it with:   open \"$APP\""
