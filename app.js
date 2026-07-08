@@ -39,6 +39,7 @@
     hintIos: $('hint-ios'), hintAndroid: $('hint-android'),
     installPanelIos: $('install-panel-ios'), installPanelAndroid: $('install-panel-android'),
     installNative: $('install-native'),
+    ptr: $('ptr'), ptrText: $('ptr-text'),
   };
 
   let state = loadState();
@@ -48,6 +49,13 @@
   let searchTimer = null;
 
   const pad = (n) => String(n).padStart(2, '0');
+
+  // Count a custom event in GoatCounter (no-op if analytics is blocked or offline).
+  function track(name) {
+    try {
+      if (window.goatcounter) window.goatcounter.count({ path: name, event: true });
+    } catch { /* analytics must never break the app */ }
+  }
 
   // The zone this device's clock is set to (e.g. Africa/Lagos), if we know it.
   function deviceZone() {
@@ -376,6 +384,7 @@
     showInstallView('choice');
     if (typeof els.installDialog.showModal === 'function') els.installDialog.showModal();
     else els.installDialog.setAttribute('open', '');
+    track('save-guide-opened');
   }
 
   function closeInstall() {
@@ -424,7 +433,70 @@
     window.addEventListener('appinstalled', () => {
       els.installFab.hidden = true;
       closeInstall();
+      track('app-installed');
     });
+  }
+
+  /* ---------- Pull to refresh ----------
+   * The installed app has no browser reload button, so a swipe down from
+   * the top of the page re-fetches the latest version (online only). */
+
+  function initPullToRefresh() {
+    const READY_AT = 58; // damped pull distance (px) that arms the refresh
+    const damp = (dy) => Math.min(dy * 0.45, 90);
+    const scrollTop = () => (document.scrollingElement || document.documentElement).scrollTop;
+    let startY = null;
+    let show = 0;
+    let refreshing = false;
+
+    const setPos = (y) => { els.ptr.style.transform = `translate(-50%, ${y - 64}px)`; };
+    const retract = () => {
+      els.ptr.classList.remove('is-dragging', 'is-ready');
+      els.ptr.style.transform = '';
+      els.ptrText.textContent = 'Pull to refresh';
+    };
+
+    document.addEventListener('touchstart', (ev) => {
+      if (refreshing || ev.touches.length !== 1) return;
+      if (document.querySelector('dialog[open]') || ev.target.closest('dialog, input')) return;
+      if (scrollTop() > 1) return;
+      startY = ev.touches[0].clientY;
+      show = 0;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (ev) => {
+      if (refreshing || startY === null) return;
+      const dy = ev.touches[0].clientY - startY;
+      if (dy <= 0 && show === 0) { startY = null; return; } // normal scroll up
+      if (scrollTop() > 1) { startY = null; retract(); return; }
+      ev.preventDefault();
+      show = damp(Math.max(dy, 0));
+      els.ptr.classList.add('is-dragging');
+      els.ptr.classList.toggle('is-ready', show >= READY_AT);
+      els.ptrText.textContent = show >= READY_AT ? 'Release to refresh' : 'Pull to refresh';
+      setPos(show);
+    }, { passive: false });
+
+    function finish() {
+      if (refreshing || startY === null) return;
+      startY = null;
+      if (show < READY_AT) { retract(); return; }
+      if (!navigator.onLine) {
+        els.ptr.classList.remove('is-dragging', 'is-ready');
+        els.ptrText.textContent = 'You’re offline';
+        setPos(72);
+        setTimeout(retract, 1200);
+        return;
+      }
+      refreshing = true;
+      els.ptr.classList.remove('is-dragging', 'is-ready');
+      els.ptr.classList.add('is-refreshing');
+      els.ptrText.textContent = 'Refreshing…';
+      setPos(72);
+      setTimeout(() => location.reload(), 350);
+    }
+    document.addEventListener('touchend', finish);
+    document.addEventListener('touchcancel', finish);
   }
 
   /* ---------- Init ---------- */
@@ -469,6 +541,7 @@
   applyTheme(loadTheme());
   setDefaultInputs();
   initInstallGuide();
+  initPullToRefresh();
   renderAll();
   Zones.primeNames(); // background: index MST/MDT-style names for search
 
@@ -495,7 +568,7 @@
         if (hadController) location.reload();
         hadController = true;
       });
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {});
     });
   }
 })();

@@ -47,6 +47,9 @@
 html { color-scheme: dark; }
 html[data-theme="light"] { color-scheme: light; }
 
+/* Disable the browser's own pull-to-refresh — the app provides its own. */
+html { overscroll-behavior-y: none; }
+
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   background: var(--bg);
@@ -185,6 +188,7 @@ main { display: flex; flex-direction: column; gap: 16px; }
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
   line-height: 1.15;
+  white-space: nowrap;
 }
 
 .date { font-size: 0.8125rem; color: var(--text-2); font-variant-numeric: tabular-nums; }
@@ -487,6 +491,34 @@ tr.ref-now td:last-child { border-radius: 0 8px 8px 0; }
 .zo-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
 .zo-time { font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
 .zo-abbr { font-size: 0.6875rem; color: var(--text-3); }
+
+/* ---------- Pull to refresh ---------- */
+
+.ptr {
+  position: fixed;
+  top: calc(8px + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 550;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  transform: translate(-50%, -64px);
+  transition: transform 200ms ease;
+  pointer-events: none;
+}
+.ptr.is-dragging { transition: none; }
+.ptr-icon { width: 16px; height: 16px; color: var(--orange); flex-shrink: 0; }
+.ptr.is-ready .ptr-icon { color: var(--green); }
+.ptr.is-refreshing .ptr-icon { animation: ptr-spin 800ms linear infinite; }
+@keyframes ptr-spin { to { transform: rotate(360deg); } }
 
 /* ---------- Save-to-phone ---------- */
 
