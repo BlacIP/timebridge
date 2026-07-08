@@ -49,11 +49,22 @@
 
   const pad = (n) => String(n).padStart(2, '0');
 
+  // The zone this device's clock is set to (e.g. Africa/Lagos), if we know it.
+  function deviceZone() {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return tz && Zones.isValid(tz) ? tz : null;
+    } catch { return null; }
+  }
+
   function loadState() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY));
       if (s && Zones.isValid(s.from) && Zones.isValid(s.to)) return { from: s.from, to: s.to };
     } catch { /* fall through to defaults */ }
+    // First visit: convert into the visitor's own zone when we can detect it.
+    const dz = deviceZone();
+    if (dz && dz !== DEFAULT_STATE.from) return { from: DEFAULT_STATE.from, to: dz };
     return { ...DEFAULT_STATE };
   }
 
@@ -296,6 +307,21 @@
       : [['Popular', Zones.popular()], ['All time zones', Zones.all()]];
 
     const html = [];
+    const dz = deviceZone();
+    if (!results && dz) {
+      html.push(
+        '<p class="picker-section">My location</p>',
+        `<button type="button" class="zone-option zone-option--location${dz === selected ? ' is-selected' : ''}" data-id="${dz}">` +
+        '<span class="zo-left"><span class="zo-city">' +
+        '<svg class="zo-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>' +
+        `${city(dz)} — where I am</span>` +
+        `<span class="zo-sub">Detected from this device · ${dz}</span></span>` +
+        `<span class="zo-right"><span class="zo-time">${TZ.formatTime(dz, now)}</span>` +
+        `<span class="zo-abbr">${abbr(dz, now)}</span></span>` +
+        '</button>'
+      );
+    }
     for (const [title, list] of sections) {
       html.push(`<p class="picker-section">${title}</p>`);
       for (const e of list) {

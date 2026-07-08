@@ -1,5 +1,5 @@
 /* TimeBridge service worker — cache-first app shell, fully offline. */
-const CACHE = 'timebridge-v5';
+const CACHE = 'timebridge-v6';
 const ASSETS = [
   './',
   './index.html',
