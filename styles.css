@@ -377,7 +377,7 @@ tr.ref-now td:last-child { border-radius: 0 8px 8px 0; }
 
 /* ---------- Zone picker ---------- */
 
-#zone-picker {
+#zone-picker, #install-dialog {
   width: 100%;
   max-width: 30rem;
   margin: auto auto 0;
@@ -385,7 +385,7 @@ tr.ref-now td:last-child { border-radius: 0 8px 8px 0; }
   border: 0;
   background: transparent;
 }
-#zone-picker::backdrop { background: var(--backdrop); }
+#zone-picker::backdrop, #install-dialog::backdrop { background: var(--backdrop); }
 
 .picker-sheet {
   display: flex;
@@ -398,8 +398,8 @@ tr.ref-now td:last-child { border-radius: 0 8px 8px 0; }
 }
 
 @media (min-width: 640px) {
-  #zone-picker { margin: auto; }
-  .picker-sheet { border-radius: 20px; }
+  #zone-picker, #install-dialog { margin: auto; }
+  .picker-sheet, .install-sheet { border-radius: 20px; }
 }
 
 .picker-head {
@@ -474,6 +474,194 @@ tr.ref-now td:last-child { border-radius: 0 8px 8px 0; }
 .zo-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
 .zo-time { font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
 .zo-abbr { font-size: 0.6875rem; color: var(--text-3); }
+
+/* ---------- Save-to-phone ---------- */
+
+.install-fab {
+  position: fixed;
+  /* On phones this hugs the right edge; on wide screens it stays
+     inside the 30rem app column instead of drifting to the viewport edge. */
+  right: max(calc(16px + env(safe-area-inset-right)), calc(50vw - 15rem + 16px));
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  z-index: 10;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--orange);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.install-fab:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(249, 115, 22, 0.45), 0 2px 6px rgba(0, 0, 0, 0.25); }
+.install-fab:active { transform: scale(0.94); }
+.install-fab svg { width: 24px; height: 24px; }
+.install-fab[hidden] { display: none; }
+
+/* Hide the button once the app is already installed */
+@media (display-mode: standalone) {
+  .install-fab { display: none; }
+}
+
+.install-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: min(85dvh, 40rem);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--shadow);
+}
+
+.install-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.install-head h2 {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.install-nav {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+.install-nav svg { width: 17px; height: 17px; }
+.install-nav:hover { background: var(--surface-3); }
+.install-nav[hidden] { display: none; }
+
+.install-body {
+  overflow-y: auto;
+  padding: 20px 20px calc(24px + env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+
+.install-lede {
+  font-size: 0.875rem;
+  color: var(--text-2);
+  margin-bottom: 16px;
+}
+
+.install-choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.platform-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 108px;
+  padding: 18px 12px 14px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+.platform-btn:hover { background: var(--surface-3); border-color: var(--orange); }
+.platform-btn:active { transform: scale(0.97); }
+.platform-btn svg { width: 32px; height: 32px; color: var(--text-2); }
+.platform-btn:hover svg { color: var(--orange); }
+.platform-name { font-size: 0.9375rem; font-weight: 600; }
+
+.platform-hint {
+  font-size: 0.6875rem;
+  font-weight: 650;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.platform-hint[hidden] { display: none; }
+
+.install-steps {
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.install-steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 40px;
+  font-size: 0.875rem;
+  color: var(--text-2);
+}
+.install-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--orange);
+  background: var(--orange-soft);
+  border-radius: 999px;
+}
+.install-steps li:last-child::before {
+  content: "✓";
+  color: var(--green);
+  background: var(--green-soft);
+}
+.install-steps strong { color: var(--text); font-weight: 600; }
+
+.step-ico {
+  display: inline-block;
+  vertical-align: -3px;
+  width: 16px;
+  height: 16px;
+  color: var(--orange);
+}
+
+.install-native {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 18px;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  color: #fff;
+  background: var(--orange);
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: filter 180ms ease, transform 180ms ease;
+}
+.install-native:hover { filter: brightness(1.08); }
+.install-native:active { transform: scale(0.98); }
+.install-native svg { width: 18px; height: 18px; }
+.install-native[hidden] { display: none; }
 
 /* ---------- Footer ---------- */
 

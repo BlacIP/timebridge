@@ -147,6 +147,85 @@
     <p>Daylight saving handled automatically · Works offline</p>
   </footer>
 
+  <!-- Floating "save to phone" button -->
+  <button class="install-fab" id="install-fab" type="button" aria-haspopup="dialog"
+          aria-label="How to save this app to your phone" title="Save to phone">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect width="14" height="20" x="5" y="2" rx="2.5"/>
+      <path d="M12 7v6"/><path d="m9.5 10.5 2.5 2.5 2.5-2.5"/>
+      <path d="M9.5 18h5"/>
+    </svg>
+  </button>
+
+  <!-- Save-to-phone guide -->
+  <dialog id="install-dialog" aria-label="Save TimeBridge to your phone">
+    <div class="install-sheet">
+      <div class="install-head">
+        <button class="install-nav" id="install-back" type="button" aria-label="Back to phone choice" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <h2 id="install-title">Save to your phone</h2>
+        <button class="install-nav" id="install-close" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="install-body">
+        <!-- Step 1: pick your phone -->
+        <div id="install-choice">
+          <p class="install-lede">Save TimeBridge to your home screen and it opens like a real app — full screen, and it works offline. Which phone do you have?</p>
+          <div class="install-choice-grid">
+            <button class="platform-btn" id="platform-ios" type="button">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516.024.034 1.52.087 2.475-1.258.955-1.345.762-2.391.728-2.43Zm3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422.212-2.189 1.675-2.789 1.698-2.854.023-.065-.597-.79-1.254-1.157a3.692 3.692 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56.244.729.625 1.924 1.273 2.796.576.984 1.34 1.667 1.659 1.899.319.232 1.219.386 1.843.067.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758.347-.79.505-1.217.473-1.282Z"/>
+              </svg>
+              <span class="platform-name">iPhone</span>
+              <span class="platform-hint" id="hint-ios" hidden>This phone</span>
+            </button>
+            <button class="platform-btn" id="platform-android" type="button">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.46 11.46 0 0 0-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48A10.81 10.81 0 0 0 1 18h22a10.81 10.81 0 0 0-5.4-8.52ZM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"/>
+              </svg>
+              <span class="platform-name">Android</span>
+              <span class="platform-hint" id="hint-android" hidden>This phone</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- iPhone steps -->
+        <div id="install-panel-ios" hidden>
+          <ol class="install-steps">
+            <li>Open this site in <strong>Safari</strong> — saving only works from Safari.</li>
+            <li>Tap the <strong>Share</strong> button
+              <svg class="step-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></svg>
+              at the bottom of the screen.</li>
+            <li>Scroll down the list and tap <strong>Add to Home Screen</strong>
+              <svg class="step-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>.</li>
+            <li>Tap <strong>Add</strong> in the top-right corner.</li>
+            <li>Done! TimeBridge is now on your home screen like an app.</li>
+          </ol>
+        </div>
+
+        <!-- Android steps -->
+        <div id="install-panel-android" hidden>
+          <button class="install-native" id="install-native" type="button" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Install now — one tap
+          </button>
+          <ol class="install-steps">
+            <li>Open this site in <strong>Chrome</strong>.</li>
+            <li>Tap the <strong>menu</strong>
+              <svg class="step-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+              (three dots) at the top-right.</li>
+            <li>Tap <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
+            <li>Confirm by tapping <strong>Install</strong> (or <strong>Add</strong>).</li>
+            <li>Done! TimeBridge is now on your home screen like an app.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Zone picker -->
   <dialog id="zone-picker" aria-label="Choose a time zone">
     <div class="picker-sheet">

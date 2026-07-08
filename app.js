@@ -32,6 +32,13 @@
     refBody: $('ref-body'), refDateNote: $('ref-date-note'),
     picker: $('zone-picker'), zoneSearch: $('zone-search'),
     zoneList: $('zone-list'), pickerClose: $('picker-close'),
+    installFab: $('install-fab'), installDialog: $('install-dialog'),
+    installTitle: $('install-title'), installBack: $('install-back'),
+    installClose: $('install-close'), installChoice: $('install-choice'),
+    platformIos: $('platform-ios'), platformAndroid: $('platform-android'),
+    hintIos: $('hint-ios'), hintAndroid: $('hint-android'),
+    installPanelIos: $('install-panel-ios'), installPanelAndroid: $('install-panel-android'),
+    installNative: $('install-native'),
   };
 
   let state = loadState();
@@ -316,6 +323,84 @@
     closePicker();
   }
 
+  /* ---------- Save-to-phone guide ---------- */
+
+  const INSTALL_TITLES = {
+    choice: 'Save to your phone',
+    ios: 'Save on iPhone',
+    android: 'Save on Android',
+  };
+
+  let deferredInstall = null; // captured beforeinstallprompt (Android/Chrome)
+
+  function isInstalled() {
+    return window.matchMedia('(display-mode: standalone)').matches
+      || navigator.standalone === true;
+  }
+
+  function showInstallView(view) {
+    els.installChoice.hidden = view !== 'choice';
+    els.installPanelIos.hidden = view !== 'ios';
+    els.installPanelAndroid.hidden = view !== 'android';
+    els.installBack.hidden = view === 'choice';
+    els.installTitle.textContent = INSTALL_TITLES[view];
+  }
+
+  function openInstall() {
+    showInstallView('choice');
+    if (typeof els.installDialog.showModal === 'function') els.installDialog.showModal();
+    else els.installDialog.setAttribute('open', '');
+  }
+
+  function closeInstall() {
+    if (typeof els.installDialog.close === 'function' && els.installDialog.open) els.installDialog.close();
+    else els.installDialog.removeAttribute('open');
+  }
+
+  function initInstallGuide() {
+    if (isInstalled()) {
+      els.installFab.hidden = true;
+      return;
+    }
+
+    // Mark the button matching this device so the choice is obvious.
+    const ua = navigator.userAgent;
+    const onIOS = /iPhone|iPad|iPod/.test(ua)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS
+    if (onIOS) els.hintIos.hidden = false;
+    else if (/Android/i.test(ua)) els.hintAndroid.hidden = false;
+
+    els.installFab.addEventListener('click', openInstall);
+    els.installClose.addEventListener('click', closeInstall);
+    els.installBack.addEventListener('click', () => showInstallView('choice'));
+    els.platformIos.addEventListener('click', () => showInstallView('ios'));
+    els.platformAndroid.addEventListener('click', () => showInstallView('android'));
+    els.installDialog.addEventListener('click', (ev) => {
+      if (ev.target === els.installDialog) closeInstall();
+    });
+
+    // Chrome on Android offers a real install prompt — surface it as one tap.
+    window.addEventListener('beforeinstallprompt', (ev) => {
+      ev.preventDefault();
+      deferredInstall = ev;
+      els.installNative.hidden = false;
+    });
+
+    els.installNative.addEventListener('click', async () => {
+      if (!deferredInstall) return;
+      deferredInstall.prompt();
+      const choice = await deferredInstall.userChoice;
+      deferredInstall = null;
+      els.installNative.hidden = true;
+      if (choice.outcome === 'accepted') closeInstall();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      els.installFab.hidden = true;
+      closeInstall();
+    });
+  }
+
   /* ---------- Init ---------- */
 
   els.fromRow.addEventListener('click', () => openPicker('from'));
@@ -357,6 +442,7 @@
   Zones.init();
   applyTheme(loadTheme());
   setDefaultInputs();
+  initInstallGuide();
   renderAll();
   Zones.primeNames(); // background: index MST/MDT-style names for search
 
