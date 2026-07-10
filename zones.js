@@ -6,7 +6,7 @@
   const POPULAR = [
     'America/Denver', 'Africa/Lagos', 'America/Phoenix', 'America/New_York',
     'America/Chicago', 'America/Los_Angeles', 'Europe/London', 'Europe/Paris',
-    'Asia/Dubai', 'Asia/Kolkata', 'Asia/Calcutta', 'Asia/Singapore', 'Asia/Tokyo',
+    'Asia/Dubai', 'Asia/Kolkata', 'Asia/Calcutta', 'Asia/Manila', 'Asia/Singapore', 'Asia/Tokyo',
     'Australia/Sydney', 'Africa/Johannesburg', 'Africa/Nairobi', 'UTC',
   ];
 

@@ -19,6 +19,7 @@ let zoneChoices: [ZoneChoice] = [
     .init(id: "Africa/Johannesburg", label: "Johannesburg, South Africa", code: "JNB", icon: "🇿🇦"),
     .init(id: "Asia/Kolkata", label: "Kolkata, India", code: "CCU", icon: "🇮🇳"),
     .init(id: "Asia/Dubai", label: "Dubai, UAE", code: "DXB", icon: "🇦🇪"),
+    .init(id: "Asia/Manila", label: "Manila, Philippines", code: "MNL", icon: "🇵🇭"),
     .init(id: "Asia/Tokyo", label: "Tokyo, Japan", code: "TYO", icon: "🇯🇵"),
     .init(id: "UTC", label: "UTC", code: "UTC", icon: "🌐"),
 ]

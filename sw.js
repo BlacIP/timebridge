@@ -1,7 +1,7 @@
 /* TimeBridge service worker — network-first with offline fallback.
  * Online: always serve the freshest files. Offline or slow: fall back
  * to the cached app shell so the app still opens instantly. */
-const CACHE = 'timebridge-v8';
+const CACHE = 'timebridge-v9';
 const NETWORK_TIMEOUT_MS = 3500;
 const ASSETS = [
   './',
